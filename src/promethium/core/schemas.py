@@ -41,3 +41,18 @@ class JobRead(JobBase):
     completed_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+# --- Upload Schemas ---
+class UploadInitRequest(BaseModel):
+    filename: str
+    total_size: int
+    chunk_size: Optional[int] = 5 * 1024 * 1024  # 5MB default
+
+class UploadInitResponse(BaseModel):
+    upload_id: str
+    chunk_size: int
+
+class UploadFinalizeRequest(BaseModel):
+    upload_id: str
+    name: str
+    format: str
