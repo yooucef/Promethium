@@ -29,7 +29,7 @@ app = FastAPI(
 )
 
 # CORS
-origins = ["*"] # Configure appropriately for production
+origins = ["http://localhost:3000", "http://localhost:8000", "*"] # Configure appropriately for production
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
