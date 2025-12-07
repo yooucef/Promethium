@@ -34,7 +34,9 @@ Navigate to the web interface (default: `http://localhost:8000` or the configure
 ## Step 4: Viewing Results
 
 (Feature In Development)
-Once completed, the job entry will show a success status. Future versions will allow direct visualization in the "Interactive Visualization" area. Currently, results are saved to the backend storage directory defined in `DATA_STORAGE_PATH`.
+## Step 4: Viewing Results
+
+Once completed, the job entry will show a success status. You can view the reconstructed wavefield directly in the dashboard using the **Interactive Visualization** panel, which provides real-time heatmap plots of the seismic data. Results are also saved to the backend storage directory defined in `DATA_STORAGE_PATH`.
 
 ## Troubleshooting
 
