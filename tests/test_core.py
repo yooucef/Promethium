@@ -1,21 +1,34 @@
 import pytest
 import numpy as np
-from promethium.core.models import SeismicTrace, SeismicDataset, SeismicGather
+import xarray as xr
+from promethium.core.models import SeismicDataset, SeismicTrace
+from promethium.io.readers import read_segy_robust
+from promethium.core.exceptions import DataIngestionError
+from pathlib import Path
 
-def test_trace_creation():
+def test_seismic_trace_creation():
     data = np.zeros(100)
-    trace = SeismicTrace(data=data, sample_rate=0.004)
-    assert trace.sample_rate == 0.004
+    trace = SeismicTrace(data=data, sample_rate=0.002)
+    assert trace.sample_rate == 0.002
     assert len(trace.time_axis) == 100
+    assert trace.time_axis[-1] == 0.002 * 99
 
-def test_gather_creation():
-    data = np.zeros(100)
-    traces = [SeismicTrace(data=data, sample_rate=0.004) for _ in range(5)]
-    gather = SeismicGather(traces=traces)
-    assert len(gather.traces) == 5
+def test_seismic_dataset_creation():
+    data = xr.DataArray(np.zeros((10, 100)), dims=("trace", "time"))
+    dataset = SeismicDataset(data=data, metadata={"test": True})
+    assert dataset.metadata["test"] is True
+    assert dataset.data.shape == (10, 100)
 
-def test_dataset_import():
-    import xarray as xr
-    da = xr.DataArray(np.zeros((5, 100)))
-    ds = SeismicDataset(data=da)
-    assert ds.data.shape == (5, 100)
+def test_read_segy_missing_file():
+    with pytest.raises(DataIngestionError):
+        read_segy_robust("non_existent_file.sgy")
+
+def test_read_segy_mock(tmp_path):
+    # We can't easily generate a valid binary SEG-Y without segyio writing it first.
+    # For now, we test that it attempts to read and handles errors gracefully 
+    # or use a check for file existence
+    f = tmp_path / "fake.sgy"
+    f.touch()
+    # segyio.open should fail on empty file
+    with pytest.raises(DataIngestionError):
+        read_segy_robust(f)
