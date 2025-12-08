@@ -1,95 +1,157 @@
-# Promethium - Advanced Seismic Data Recovery and Reconstruction Framework
+# Promethium Framework: State-of-the-Art Seismic Data Reconstruction
 
-[![CI](https://github.com/olaflaitinen/Promethium/actions/workflows/ci.yml/badge.svg)](https://github.com/olaflaitinen/Promethium/actions/workflows/ci.yml)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-ee4c2c.svg)](https://pytorch.org/)
-[![Angular](https://img.shields.io/badge/Angular-17+-dd0031.svg)](https://angular.io/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg)](https://fastapi.tiangolo.com/)
+[![CI Pipeline](https://github.com/olaflaitinen/Promethium/actions/workflows/ci.yml/badge.svg)](https://github.com/olaflaitinen/Promethium/actions/workflows/ci.yml)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![Framework: PyTorch](https://img.shields.io/badge/Framework-PyTorch%202.0-ee4c2c.svg)](https://pytorch.org/)
+[![Frontend: Angular](https://img.shields.io/badge/Frontend-Angular%2017-dd0031.svg)](https://angular.io/)
 [![Code Style: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 
-Promethium is an advanced framework for seismic data recovery, reconstruction, and enhancement. It integrates state-of-the-art artificial intelligence and machine learning techniques with classical geophysical signal processing to solve complex inverse problems in exploration geophysics, seismology, and hazard analysis.
+![Promethium Logo](docs/img/logo.png)
 
-The system is designed for high-performance scale, supporting high-throughput ingestion of seismic data segments, processing via distributed GPU workers, and interactive visualization through a modern web interface.
+## Abstract
 
-## Branding and Visual Identity
+**Promethium** is an open-source, high-performance computational framework dedicated to the reconstruction, denoising, and regularized interpolation of seismic wavefields. Addressing the ill-posed inverse problems inherent in sparse seismic acquisition, Promethium synergizes classical geophysical signal processing with modern deep generative models. The system introduces a hybrid architecture where Physics-Informed Neural Networks (PINNs) regularize data-driven priors (U-Net, Autoencoders) via the acoustic wave equation, ensuring that reconstructed traces adhere to governing physical laws. Engineered for scalability, the framework leverages a microservices-based topology (FastAPI, Celery, Redis) and optimized Cloud-Native storage (Zarr) to process terabyte-scale datasets on distributed GPU clusters.
 
-The Promethium visual identity is anchored by a dark navy logo representing a continuous, organic waveform, symbolizing the recovery of signal fidelity from noise.
+## 1. Introduction
 
-*   **Logo**: `assets/branding/promethium-logo.png`
-*   **Primary Color**: Deep Navy `#050B24`
-*   **Accent Color**: Electric Cyan `#00F0FF`
+Seismic data processing is fundamental to subsurface imaging in exploration geophysics, seismology, and hazard analysis. However, field data is frequently compromised by environmental noise, irregular sampling geometries, and missing traces due to access constraints or equipment failure.
 
-## Key Features
+Promethium addresses these challenges by treating seismic reconstruction as a structured inpainting problem $y = M \cdot x + \epsilon$, where $y$ is the observed data, $M$ is the subsampling mask, and $\epsilon$ is noise. The framework solves for the ideal wavefield $x$ by minimizing a composite objective function:
 
-*   **Multi-Format Ingestion**: Native support for **SEG-Y**, **SEG-2**, **miniSEED**, and **SAC** formats.
-*   **Signal Conditioning**: Robust pipelines for denoising, deconvolution, and wavelet estimation.
-*   **AI/ML Reconstruction**: Implementation of **U-Net**, **Autoencoders**, **GANs**, and **PINNs** for data interpolation and inpainting.
-*   **Physics-Informed Constraints**: Integration of Wave Equation losses to ensure physical viability of reconstructed wavefields.
-*   **Scalable Architecture**: Asynchronous task orchestration using **Celery**, **Redis**, and **PostgreSQL**.
-*   **Modern Frontend**: an **Angular**-based interface for job management, configuration, and real-time visualization.
-*   **Containerized Deployment**: Fully Dockerized stack for consistent deployment across local and cloud environments.
+$$ \mathcal{L}_{total} = || M \cdot f_\theta(y) - y ||_2^2 + \lambda_{phys} || \mathcal{W}(f_\theta(y)) ||_F^2 $$
 
-## Architecture Snapshot
+Where $f_\theta$ is the deep neural network and $\mathcal{W}$ is the wave equation operator. This approach yields reconstructions that are both data-consistent and physically plausible.
 
-Promethium follows a modular microservices-inspired architecture:
+## 2. Methodology & Algorithms
 
-1.  **Core Library**: Domain models and utilities (`src/promethium/core`).
-2.  **ML Subsystem**: PyTorch-based models and training loops (`src/promethium/ml`).
-3.  **Backend API**: FastAPI gateway exposing REST endpoints (`src/promethium/api`).
-4.  **Workflow Engine**: Distributed workers for long-running computational tasks (`src/promethium/workflows`).
-5.  **Frontend**: Interactive Angular user interface (`frontend/`).
+Promethium implements a rigorous suite of algorithms tailored for differing data regimes.
 
-For a detailed breakdown, please refer to [Architecture Overview](docs/architecture.md).
+### 2.1 Deep Generative Models
 
-## Quick Start
+*   **Residual U-Net**: A modified U-Net architecture featuring ResNet blocks in the encoder/decoder paths to mitigate vanishing gradients during deep feature extraction. It utilizes Attention Gates at skip connections to suppress irrelevant regions in the feature maps, focusing computational capacity on detailed wavefront structures.
+*   **Denoising Autoencoders**: Deep Convolutional Autoencoders (DCAE) trained to map noisy inputs to a clean latent manifold. The bottleneck layer enforces a compact representation, effectively filtering out incoherent noise that lacks structural support.
 
-The following instructions assume a Linux-based environment with Docker and Docker Compose installed.
+### 2.2 Physics-Informed Neural Networks (PINNs)
 
-### 1. clone the Repository
+To prevent the "hallucination" of geologically physically invalid events, Promethium incorporates soft physical constraints.
+*   **Wave Equation Loss**: Penalizes deviations from the scalar acoustic wave equation $\nabla^2 u - \frac{1}{c^2} \frac{\partial^2 u}{\partial t^2} = 0$.
+*   **Implementation**: Finite-difference stencils are differentiated automatically via PyTorch's autograd engine to compute partial derivatives $\partial u / \partial x$ and $\partial u / \partial t$ during training.
 
-```bash
-git clone https://github.com/olaflaitinen/Promethium.git
-cd Promethium
+### 2.3 Data Engineering Pipeline
+
+Traditional SEG-Y formats, optimized for sequential tape access, introduce significant I/O latency in random-access ML workflows.
+*   **Ingestion**: A scalable ETL pipeline converts SEG-Y volumes into **Zarr** archives.
+*   **Zarr Storage**: Data is chunked into N-dimensional blocks (e.g., `(Time: 128, Offset: 128)`) and compressed with Blosc. This enables random access to local patches in $O(1)$ time, saturating GPU bandwidth during training without IO blocking.
+
+## 3. System Architecture
+
+The technical architecture adheres to the **Twelve-Factor App** methodology, ensuring portability and scalability.
+
+```mermaid
+graph TD
+    Client[Angular Client] -->|HTTPS| API[FastAPI Gateway]
+    API -->|Async Task| Redis[Redis Broker]
+    
+    subgraph Compute Cluster
+        Worker[Celery Worker - GPU] -->|Pull| Redis
+        Worker -->|Load| Store[Zarr Object Store]
+        Worker -->|Train/Infer| Model[PyTorch Engine]
+    end
+    
+    API -->|Metadata| DB[(PostgreSQL)]
+    Worker -->|Log Metrics| Monitor[Prometheus Pushgateway]
 ```
 
-### 2. Configure Environment
+### 3.1 Component Stack
+*   **Frontend**: Angular 17 SPA with D3.js/WebGL for high-density seismic visualization. Features include real-time gain adjustment, spectral analysis, and side-by-side difference plotting.
+*   **Backend**: Python 3.10 / FastAPI. Fully typed codebase complying with OpenAPI 3.1 standards.
+*   **Orchestration**: Celery workers handle long-running jobs (training, inference). State is managed via Redis Sentinel for high availability.
+*   **Persistence**: PostgreSQL for relational metadata (Project/Dataset/Job hierarchy); Zarr on local NVMe or S3 for bulk data.
 
-Copy the example configuration to a production environment file.
+## 4. Performance & Benchmarking
 
-```bash
-cp .env.example .env
+Promethium includes `src.promethium.ml.benchmark.BenchmarkEngine` to enforce rigorous quantitative standards.
+
+### 4.1 Metrics
+*   **SSIM (Structural Similarity Index)**: Measures the degradation of structural information (luminance, contrast, structure) rather than pixel-wise errors. Critical for assessing reflector continuity.
+*   **PSNR (Peak Signal-to-Noise Ratio)**: Standard engineering metric for reconstruction fidelity.
+*   **SNR**: Signal-to-Noise ratio in decibels (dB).
+
+### 4.2 Computational Efficiency
+*   **Batching Strategy**: Data loaders utilize dynamic patch extraction with pre-fetching to maintain 100% GPU volatile utility.
+*   **Inference**: Implements a sliding-window approach with Cosine blending to eliminate block artifacts at patch boundaries, ensuring seamless full-volume reconstruction.
+
+## 5. Deployment Guide
+
+The platform is containerized for deployment on Kubernetes or Docker Swarm.
+
+### Prerequisites
+*   **OS**: Linux (Ubuntu 22.04 LTS recommended)
+*   **Container Runtime**: Docker Engine 24.0+
+*   **Hardware**: NVIDIA GPU (Ampere/Hopper architecture) with Container Toolkit installed.
+
+### Installation
+
+1.  **Clone Repository**:
+    ```bash
+    git clone https://github.com/olaflaitinen/Promethium.git
+    cd Promethium
+    ```
+
+2.  **Environment Setup**:
+    Configure environment variables for database credentials and storage paths.
+    ```bash
+    cp .env.example .env
+    ```
+
+3.  **Build & Launch**:
+    Execute the multi-stage Docker build process.
+    ```bash
+    docker-compose up --build -d
+    ```
+
+4.  **Verification**:
+    *   **Frontend**: `http://localhost:4200`
+    *   **API Specs**: `http://localhost:8000/docs`
+    *   **Grafana**: `http://localhost:3000`
+
+## 6. Usage Workflows
+
+### 6.1 Data Ingestion
+Users upload SEG-Y files via the Angular Dashboard. The backend triggers an asynchronous indexing task, extracting binary headers and geometry metadata to populate the PostgreSQL catalog, while simultaneously transcoding trace data to Zarr.
+
+### 6.2 Model Training
+Researchers configure experiments via the UI, selecting:
+*   **Architecture**: U-Net Depth, Filter counts, Activation functions.
+*   **Loss Function**: Weighted combination of MSE, L1, and Physics constraints.
+*   **Hyperparameters**: Learning rate schedules (Cosine Annealing), Batch size.
+
+### 6.3 Inference & QC
+Trained models are stored in the Model Registry. Operations can be applied to new surveys. Results are visualized in the "Quality Control" module, overlaying the residual difference map to highlight reconstructed energy.
+
+## 7. Governance & Citation
+
+### Governance
+Promethium is maintained by a core team of geophysicists and research engineers. decision-making follows a consensus-seeking model detailed in `GOVERNANCE.md`.
+
+### Citation
+If you use Promethium in academic research, please cite:
+
+```bibtex
+@software{promethium_framework,
+  author = {Promethium Contributors},
+  title = {Promethium: Advanced Seismic Data Recovery Framework},
+  year = {2025},
+  url = {https://github.com/olaflaitinen/Promethium},
+  license = {CC BY-NC 4.0}
+}
 ```
 
-### 3. Launch the Stack
+## 8. License
 
-Start all services in detached mode.
+**Promethium** is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)** license.
+*   **Academic/Research Use**: Permitted and encouraged.
+*   **Commercial Use**: Strictly prohibited without a commercial license agreement.
 
-```bash
-docker-compose up --build -d
-```
-
-Access the application at `http://localhost:4200` and the API documentation at `http://localhost:8000/docs`.
-
-## Use Cases
-
-*   **Exploration Geophysics**: Recovering missing traces in sparse acquisition surveys to improve subsurface imaging.
-*   **Continuous Monitoring**: Real-time denoising of microseismic streams for accurate event detection.
-*   **Academic Benchmarking**: Providing a standardized platform for comparing novel reconstruction algorithms against established baselines.
-
-## Documentation
-
-*   [Overview](docs/overview.md)
-*   [User Guide](docs/user-guide.md)
-*   [Developer Guide](docs/developer-guide.md)
-*   [ML Pipelines](docs/ml-pipelines.md)
-*   [Benchmarking](docs/benchmarking.md)
-*   [Deployment Guide](docs/deployment-guide.md)
-
-## Contributing
-
-We welcome contributions from the community. Please review our [Contribution Guidelines](CONTRIBUTING.md) and [Governance Model](GOVERNANCE.md) before submitting Pull Requests.
-
-## License
-
-This project is currently proprietary. Please see the [LICENSE](LICENSE) file for details.
+For full legal terms, consult the [`LICENSE`](LICENSE) file.
