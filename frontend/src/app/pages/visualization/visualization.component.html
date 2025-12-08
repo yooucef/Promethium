@@ -1,0 +1,54 @@
+<div class="page-header">
+    <h1>Data Visualization</h1>
+    <p>Interactive seismic viewer and quality control.</p>
+</div>
+
+<div class="viz-container pm-card">
+    <div class="viz-toolbar">
+        <div class="toolbar-group">
+            <label>Display Mode</label>
+            <div class="btn-group">
+                <button class="pm-btn pm-btn-sm active">Wiggle</button>
+                <button class="pm-btn pm-btn-sm">Density</button>
+                <button class="pm-btn pm-btn-sm">Spectra</button>
+            </div>
+        </div>
+
+        <div class="toolbar-group">
+            <label>Gain (dB)</label>
+            <input type="range" class="pm-input-range" min="-10" max="10" value="0">
+        </div>
+
+        <div class="toolbar-group">
+            <label>Color Scale</label>
+            <select class="pm-input pm-input-sm">
+                <option>Greyscale</option>
+                <option>Red-Blue</option>
+                <option>Viridis</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="viz-canvas-area" id="seismicCanvas">
+        <!-- 
+      In a real implementation, this would be a canvas element managed by 
+      a library like D3.js, Plotly.js, or WebGL shader.
+      For the prototype, we show a placeholder indicating the capability.
+    -->
+        <div class="placeholder-viz">
+            <div class="trace-lines"></div>
+            <span class="viz-msg">WebGL Context Initialized - Rendering 2,048 Traces</span>
+        </div>
+    </div>
+
+    <div class="viz-footer">
+        <div class="viz-info">
+            <span>Time: 0 - 4000ms</span>
+            <span>Xline: 1024</span>
+            <span>Inline: 512</span>
+        </div>
+        <div class="viz-cursor">
+            Cursor: T=1240ms, Amp=0.45
+        </div>
+    </div>
+</div>

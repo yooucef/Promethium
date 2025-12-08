@@ -1,32 +1,43 @@
-# Benchmarking and Metrics
+# Benchmarking Methodology 📉
 
-Promethium includes tools to evaluate the quality of reconstruction and the performance of the system.
+Promethium emphasizes rigorous quantitative evaluation. The `BenchmarkEngine` (`src/promethium/ml/benchmark.py`) computes standard metrics to track model performance.
 
-## Quality Metrics
+## Key Metrics
 
-### Signal-to-Noise Ratio (SNR)
-Measured in decibels (dB). used to compare the energy of the reconstructed signal versus the difference from the ground truth.
+### 1. Signal-to-Noise Ratio (SNR)
+*   **Definition**: Ratio of signal power to noise power, in Decibels (dB).
+*   **Goal**: Maximize. Typically > 15dB for high quality.
+*   **Formula**: $10 \cdot \log_{10}(\frac{\sum y^2}{\sum (y - \hat{y})^2})$
 
-### Structural Similarity Index (SSIM)
-Perceptual metric that quantifies the preservation of structural features (reflectors, faults) rather than just pixel-wise difference.
+### 2. Structural Similarity Index (SSIM)
+*   **Definition**: Perceptual metric measuring similarity in luminance, contrast, and structure.
+*   **Goal**: Maximize (Close to 1.0).
+*   **Relevance**: Critical for seismic checking if reflector continuity is preserved.
 
-### Peak Signal-to-Noise Ratio (PSNR)
-Standard image processing metric used for quick regression testing.
+### 3. Peak Signal-to-Noise Ratio (PSNR)
+*   **Definition**: Ratio of maximum possible power to noise power.
+*   **Goal**: Maximize.
 
-## Performance Benchmarks
-
-### Ingestion Speed
-*   **SEG-Y Reader (Custom)**: ~500 MB/s on NVMe SSD.
-*   **ObsPy Fallback**: ~50 MB/s.
-
-### Reconstruction Speed (NVIDIA T4)
-*   **U-Net Inference**: 12ms per gather (128x128).
-*   **SoftImpute (CPU)**: 450ms per gather.
-*   **PINN (Training)**: ~2 hours for 1000 iter convergence on single shot gather.
+### 4. Mean Squared Error (MSE)
+*   **Definition**: Pixel-wise squared difference.
+*   **Goal**: Minimize. Used as the primary training loss for many models.
 
 ## Running Benchmarks
-Use the provided script to run a standard benchmark suite:
 
-```bash
-python -m promethium.scripts.benchmark --data /path/to/test.sgy
+Benchmarks are run automatically after training or can be triggered manually via the CLI (future) or API.
+
+```python
+from promethium.ml.benchmark import BenchmarkEngine
+from promethium.ml.data.dataset import SeismicDataset
+
+# Load Data
+dataset = SeismicDataset("path/to/test_data.zarr")
+
+# Initialize Engine
+engine = BenchmarkEngine(model_config={...}, checkpoint_path="...")
+
+# Run
+metrics = engine.evaluate_dataset(dataset)
+print(metrics)
+# Output: {'mse': 0.002, 'ssim': 0.89, 'snr': 18.5}
 ```

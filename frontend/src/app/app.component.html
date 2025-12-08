@@ -1,0 +1,35 @@
+<div class="layout-container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon"></div> <!-- Replaced with real SVG/Img if avail -->
+            <span class="logo-text">Promethium</span>
+        </div>
+
+        <div class="nav-links">
+            <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+                <i class="icon">📊</i> Dashboard
+            </a>
+            <a routerLink="/datasets" routerLinkActive="active" class="nav-item">
+                <i class="icon">💾</i> Datasets
+            </a>
+            <a routerLink="/jobs" routerLinkActive="active" class="nav-item">
+                <i class="icon">⚡</i> Jobs
+            </a>
+            <a routerLink="/settings" routerLinkActive="active" class="nav-item">
+                <i class="icon">⚙️</i> Settings
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="system-status">
+                <span class="status-dot"></span> System Online
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <router-outlet></router-outlet>
+    </main>
+</div>

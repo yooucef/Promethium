@@ -1,34 +1,42 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional
+from typing import Optional, List
 from functools import lru_cache
+from pathlib import Path
 
 class Settings(BaseSettings):
     """
-    Application settings and configuration.
+    Centralized application configuration.
+    Reads from environment variables and .env file.
     """
-    # Application
     APP_NAME: str = "Promethium"
-    APP_VERSION: str = "1.0.0"
+    APP_VERSION: str = "2.0.0-SoTA"
     DEBUG: bool = False
     
     # API
+    API_HOST: str = "0.0.0.0"
+    API_PORT: int = 8000
     API_PREFIX: str = "/api/v1"
-    
-    # Database
-    DATABASE_URL: str = "sqlite+aiosqlite:///./promethium.db"
-    
-    # Redis (Optional in Local Mode)
-    REDIS_URL: str = "redis://localhost:6379/0"
-    
-    # Storage
-    DATA_STORAGE_PATH: str = "./data"
-    
-    # Worker
-    CELERY_BROKER_URL: str = "memory://"
-    CELERY_RESULT_BACKEND: str = "db+sqlite:///./celery_results.db"
-    CELERY_TASK_ALWAYS_EAGER: bool = True
+    CORS_ORIGINS: List[str] = ["*"]
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+    # Database & Storage
+    DATABASE_URL: str = "postgresql+asyncpg://admin:secret@db:5432/promethium"
+    REDIS_URL: str = "redis://redis:6379/0"
+    DATA_STORAGE_PATH: Path = Path("/data")
+    ARTIFACT_STORAGE_PATH: Path = Path("/artifacts")
+
+    # ML Configuration
+    DEFAULT_DEVICE: str = "cuda"  # or "cpu"
+    PRECISION: str = "16-mixed"
+
+    # Worker
+    CELERY_BROKER_URL: str = "redis://redis:6379/0"
+    CELERY_RESULT_BACKEND: str = "redis://redis:6379/1"
+    
+    model_config = SettingsConfigDict(
+        env_file=".env", 
+        case_sensitive=True,
+        extra="ignore"
+    )
 
 @lru_cache
 def get_settings() -> Settings:

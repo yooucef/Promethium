@@ -1,72 +1,67 @@
-# Architecture Overview
+# System Architecture 🏛️
 
-Promethium is architected as a set of loosely coupled modules and services, designed for scalability and maintainability.
+Promethium follows a modern, microservice-inspired modular monolith architecture designed for scalability and separation of concerns.
 
-## System Diagram
+## High-Level Overview
 
-The system consists of three main logical tiers:
-
-1.  **Presentation Tier (Frontend)**: An Angular Single Page Application (SPA).
-2.  **Application Tier (Backend)**: FastAPI REST API and Celery Workers.
-3.  **Data Tier**: PostgreSQL (Metadata), Redis (Broker/Cache), and File Storage (Seismic Data).
-
-## Directory Structure
-
-The repository is organized as follows:
-
-```text
-promethium/
-├── docker/                 # Container configurations
-│   ├── backend.Dockerfile
-│   ├── frontend.Dockerfile
-│   └── docker-compose.yml
-├── docs/                   # Documentation (Markdown)
-├── frontend/               # Angular Application
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── components/ # Standalone Components
-│   │   │   ├── services/   # API Clients
-│   │   │   └── models/     # TypeScript Interfaces
-│   │   └── assets/
-│   ├── angular.json
-│   └── package.json
-├── src/
-│   └── promethium/
-│       ├── api/            # FastAPI Routes & Main App
-│       ├── core/           # Configuration & Logging
-│       ├── io/             # SEG-Y / Seismic Readers
-│       ├── ml/             # PyTorch Models (U-Net, PINNs)
-│       ├── recovery/       # Matrix Completion Algorithms
-│       ├── signal/         # DSP Filters
-│       └── workflows/      # Celery Tasks
-└── tests/                  # Pytest Suites
+```mermaid
+graph TD
+    User[User / Geophysicist] -->|HTTP/WebSocket| Frontend[Angular Frontend]
+    Frontend -->|REST API| API[FastAPI Gateway]
+    
+    subgraph "Core Backend"
+        API -->|Metadata| DB[(PostgreSQL)]
+        API -->|Task Queue| Redis[(Redis)]
+        Worker[Celery Worker] -->|Poll| Redis
+    end
+    
+    subgraph "Data Layer"
+        Worker -->|Read/Write| Storage[Zarr / SEG-Y Storage]
+        Loader[Data Loader] -->|Stream| Worker
+    end
+    
+    subgraph "AI/ML Engine"
+        Worker -->|Train/Infer| Trainer[Lightning Trainer]
+        Trainer -->|GPU| Models[Model Registry: UNet/AE/PINN]
+    end
 ```
 
-## Component Details
+## detailed Components
 
-### Frontend (Angular)
-The user interface is built with **Angular v17+**.
-*   **Build System**: Angular CLI (Webpack).
-*   **Architecture**: Standalone Components.
-*   **State Management**: Signals and RxJS.
-*   **Communication**: `HttpClient` service interacting with the FastAPI backend.
+### 1. Frontend (`frontend/`)
+*   **Framework**: Angular 17+
+*   **Design System**: "Void/Neon" (Dark Navy `#050B24`, Cyan `#00F0FF`).
+*   **Responsibilities**: 
+    *   Job Configuration (Wizard style).
+    *   Real-time status monitoring via polling/SSE.
+    *   Interactive Visualization (Canvas/WebGL) of seismic traces.
 
-### Backend (Python)
-The core logic resides in a Python monorepo structure installed as an editable package.
-*   **Framework**: FastAPI.
-*   **Concurrency**: Fully asynchronous (async/await).
-*   **Validation**: Pydantic v2.
+### 2. Backend API (`src/promethium/api/`)
+*   **Framework**: FastAPI
+*   **Responsibilities**:
+    *   RESTful endpoints for Datasets, Models, and Jobs.
+    *   Pydantic schema validation (`schemas.py`).
+    *   Authentication and Role Management.
 
-### Asynchronous Processing
-Heavy computational tasks (reconstruction, training) are offloaded to Celery workers.
-1.  User submits job via API.
-2.  API pushes task to Redis.
-3.  Celery Worker picks up task.
-4.  Worker updates status in PostgreSQL and saves results to disk/blob storage.
+### 3. Workflow Engine (`src/promethium/workflows/`)
+*   **Framework**: Celery
+*   **Broker**: Redis
+*   **Responsibilities**:
+    *   Asynchronous execution of long-running tasks.
+    *   Task routing (e.g., `gpu` queue vs `cpu` queue).
+    *   Status updates back to Redis/DB.
 
-## Data Flow
+### 4. ML Core (`src/promethium/ml/`)
+*   **Framework**: PyTorch & PyTorch Lightning.
+*   **Key Modules**:
+    *   `models/`: Registry of architectures (`UNet`, `Autoencoder`).
+    *   `data/`: `SeismicDataset` wrapping `xarray` for efficient patching.
+    *   `train.py`: Standardized `LightningModule` for training loops.
+    *   `inference.py`: Sliding-window inference with cosine blending.
+    *   `benchmark.py`: Calculation of SSIM, PSNR, SNR.
 
-1.  **Ingestion**: User uploads SEG-Y file. API validates headers and registers metadata in PostgreSQL. File is stored in `DATA_STORAGE_PATH`.
-2.  **Visualization**: Frontend requests trace data. Backend reads byte ranges using highly optimized `segyio` or memory-mapped numpy arrays and returns JSON/Binary data.
-3.  **Processing**: User configures a reconstruction pipeline (e.g., "U-Net Interpolation"). The job is queued.
-4.  **Result**: Upon completion, the backend notifies the client (polling or potential WebSocket), and the user can view the reconstructed gather side-by-side with the original.
+### 5. Data Persistence
+*   **Metadata**: PostgreSQL (Datasets, Job History, User Profiles).
+*   **Seismic Data**: 
+    *   Raw: SEG-Y (Standard Industry Format).
+    *   Optimized: Zarr (Chunked, Compressed, Cloud-Native).

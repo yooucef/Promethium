@@ -1,77 +1,71 @@
 # Developer Guide
 
-This guide provides instructions for setting up the development environment for Promethium.
+## Environment Setup
 
-## Prerequisites
+### Prerequisites
+*   **Python**: 3.10+
+*   **Node.js**: 20+ (LTS)
+*   **Docker**: 24.0+
 
-*   **Python**: v3.10 or higher.
-*   **Node.js**: v18 LTS or higher.
-*   **Docker**: Optional, but recommended for dependency management (Postgres/Redis).
+### 1. Backend Setup (Conda)
+We recommend Conda for managing heavy scientific dependencies (PyTorch, NumPy).
 
-## Backend Development (Python)
-
-The backend is located in `src/promethium`.
-
-### Setup
-1.  Create a virtual environment:
-    ```bash
-    python -m venv .venv
-    ```
-2.  Activate the environment:
-    *   Windows: `.venv\Scripts\activate`
-    *   Linux/Mac: `source .venv/bin/activate`
-3.  Install dependencies in editable mode:
-    ```bash
-    pip install -e .[dev]
-    ```
-
-### Running the API
 ```bash
-uvicorn promethium.api.main:app --reload --host 0.0.0.0 --port 8000
-```
-The API documentation will be available at `http://localhost:8000/docs`.
+# Create environment
+conda env create -f docker/environment.yml
+conda activate promethium
 
-### Running Tests
-Promethium uses `pytest` for unit and integration testing.
-```bash
-pytest tests/
+# Install dev dependencies
+pip install -r requirements-dev.txt
+
+# Install package in editable mode
+pip install -e .
 ```
 
-## Frontend Development (Angular)
-
-The frontend is located in the `frontend/` directory.
-
-### Setup
-1.  Navigate to the directory:
-    ```bash
-    cd frontend
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Install Angular CLI globally (optional but recommended):
-    ```bash
-    npm install -g @angular/cli
-    ```
-
-### Running the Dev Server
+### 2. Frontend Setup (Angular)
 ```bash
-ng serve
-# Or via npm
+cd frontend
+npm ci
 npm start
 ```
-The application will run at `http://localhost:4200`. A proxy is configured to forward `/api` requests to `http://localhost:8000`.
 
-### Building for Production
+## Code Standards
+
+### Python
+*   **Style**: PEP 8.
+*   **Formatter**: `black` (Line length: 88).
+*   **Linter**: `ruff`.
+*   **MyPy**: Strict type checking enabled for `src/promethium/core` and `src/promethium/api`.
+
+**Running Checks**:
 ```bash
-ng build --configuration production
+ruff check .
+black --check .
+mypy src
 ```
-Artifacts will be output to `frontend/dist/web/browser`.
 
-## Code Style
+### TypeScript / Angular
+*   **Linter**: `eslint`.
+*   **Formatter**: `prettier`.
 
-*   **Python**: Follow PEP 8. Format code using `black` or `ruff`.
-*   **TypeScript**: Follow the official Angular Style Guide.
-*   **Git**: Use semantic commit messages (e.g., `feat: add robust seg-y reader`). 
-*   **Tone**: Keep all documentation and comments professional. Do not use emojis.
+## Project Structure
+
+*   `src/promethium/core`: **Core Domain**. Configuration, Logging, Exceptions. No external dependencies ideally.
+*   `src/promethium/io`: **Data Layer**. Wrappers for SEG-Y and Zarr.
+*   `src/promethium/ml`: **Intelligence**. PyTorch models (`modules/`) and Lightning systems (`systems/`).
+*   `src/promethium/api`: **Interface**. FastAPI routers, schemas.
+*   `tests/`: **Verification**. Mirrored structure of source.
+
+## Testing Strategy
+
+*   **Unit Tests**: Fast, mocked tests. Run with `pytest tests/unit`.
+*   **Integration Tests**: Database/Redis interactions. Run with `pytest tests/integration`.
+*   **E2E Tests**: Full pipeline runs. Run with `pytest tests/e2e`.
+
+## Contribution Workflow
+
+1.  Create a feature branch: `git checkout -b feature/my-cool-model`
+2.  Implement changes.
+3.  Add/Update tests.
+4.  Ensure all checks pass.
+5.  Submit PR.

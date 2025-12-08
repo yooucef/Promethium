@@ -1,15 +1,19 @@
 class PromethiumError(Exception):
-    """Base exception for Promethium."""
+    """Base exception for Promethium framework."""
+    pass
+
+class ConfigurationError(PromethiumError):
+    """Raised when configuration is invalid or missing."""
     pass
 
 class DataIngestionError(PromethiumError):
-    """Raised when data ingestion fails."""
+    """Raised when data ingestion fails (e.g., corrupt SEG-Y)."""
     pass
 
-class MetadataError(PromethiumError):
-    """Raised when metadata validation fails."""
+class ModelError(PromethiumError):
+    """Raised when ML model operations fail."""
     pass
 
-class ProcessingError(PromethiumError):
-    """Raised when a signal processing operation fails."""
+class WorkflowError(PromethiumError):
+    """Raised when a workflow/pipeline step fails."""
     pass

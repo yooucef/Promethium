@@ -1,0 +1,47 @@
+<div class="dashboard-header">
+    <h1>System Overview</h1>
+    <div class="date-display">{{ today | date:'mediumDate' }}</div>
+</div>
+
+<div class="stats-grid">
+    <div class="pm-card stat-card">
+        <div class="stat-icon">💾</div>
+        <div class="stat-value">124 TB</div>
+        <div class="stat-label">Data Managed</div>
+    </div>
+    <div class="pm-card stat-card">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value">8</div>
+        <div class="stat-label">Active Jobs</div>
+    </div>
+    <div class="pm-card stat-card">
+        <div class="stat-icon">🧠</div>
+        <div class="stat-value">4</div>
+        <div class="stat-label">Models Online</div>
+    </div>
+    <div class="pm-card stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value">99.9%</div>
+        <div class="stat-label">Uptime</div>
+    </div>
+</div>
+
+<div class="recent-activity-section">
+    <h2>Recent Activity</h2>
+    <div class="pm-card activity-list">
+        <div class="activity-item">
+            <span class="status-indicator running"></span>
+            <div class="activity-details">
+                <span class="activity-title">Training: UNet-Denoise-V4</span>
+                <span class="activity-meta">Started 2h ago by @admin</span>
+            </div>
+        </div>
+        <div class="activity-item">
+            <span class="status-indicator completed"></span>
+            <div class="activity-details">
+                <span class="activity-title">Inference: Gulf_Block_A</span>
+                <span class="activity-meta">Completed yesterday</span>
+            </div>
+        </div>
+    </div>
+</div>

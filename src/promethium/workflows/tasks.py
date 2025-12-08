@@ -1,45 +1,75 @@
 from celery import Celery
-from promethium.core.config import get_settings
-from promethium.core.logging import logger
 import time
+from typing import Dict, Any
+
+from promethium.core.config import get_settings
+from promethium.core.logging import get_logger
+from promethium.ml.train import PromethiumModule
+from promethium.ml.inference import InferenceEngine
+from promethium.io.readers import read_segy
 
 settings = get_settings()
+logger = get_logger(__name__)
 
+# Initialize Celery
 celery_app = Celery(
-    "promethium_tasks",
+    "promethium_worker",
     broker=settings.CELERY_BROKER_URL,
     backend=settings.CELERY_RESULT_BACKEND
 )
-
-celery_app.conf.update(
-    task_serializer="json",
-    accept_content=["json"],
-    result_serializer="json",
-    timezone="UTC",
-    enable_utc=True,
-)
+celery_app.conf.task_track_started = True
 
 @celery_app.task(bind=True)
-def run_reconstruction_job(self, job_id: str, dataset_id: int, algorithm: str, params: dict):
+def train_model_task(self, training_request: Dict[str, Any]):
     """
-    Executes a seismic reconstruction job.
+    Celery task to train a model.
+    In a real system, this would spin up a subprocess or submit to Slurm/K8s.
+    Here we run inline for simplicity (assuming Worker has GPU).
     """
-    logger.info(f"Starting job {job_id} with algorithm {algorithm}")
+    job_id = self.request.id
+    logger.info(f"Starting Training Job {job_id}")
+    self.update_state(state='RUNNING', meta={'progress': 0})
+    
     try:
-        # Placeholder for actual logic:
-        # 1. Load dataset (requires DB access, usually done via API calling task with path)
-        # 2. Select algorithm
-        # 3. Run algorithm (fit/transform)
-        # 4. Save result
+        # Mock Training Loop for Demo Stability
+        # Real impl would instantiate Lightning Trainer here using src/promethium/ml/train.py
+        # trainer = pl.Trainer(...)
+        # trainer.fit(...)
         
-        # Simulation
-        time.sleep(5) 
-        result_path = f"/data/results/{job_id}.sgy"
-        
-        logger.info(f"Job {job_id} completed successfully.")
-        return {"status": "COMPLETED", "result_path": result_path}
+        # Simulating progress
+        for i in range(0, 100, 10):
+            time.sleep(1) # Simulating epoch
+            self.update_state(state='RUNNING', meta={'progress': i})
+            
+        logger.info(f"Training Job {job_id} Completed")
+        return {"status": "success", "model_path": f"/artifacts/{job_id}.pt"}
         
     except Exception as e:
-        logger.error(f"Job {job_id} failed: {e}")
-        # In a real app, update DB status to FAILED here or via result backend hook
+        logger.error(f"Training Job {job_id} Failed: {e}")
+        self.update_state(state='FAILURE', meta={'error': str(e)})
+        raise e
+
+@celery_app.task(bind=True)
+def run_inference_task(self, inference_request: Dict[str, Any]):
+    """
+    Celery task for distributed inference.
+    """
+    job_id = self.request.id
+    logger.info(f"Starting Inference Job {job_id}")
+    self.update_state(state='RUNNING')
+    
+    try:
+        # Instantiate Inference Engine
+        # input_path = inference_request["input_path"]
+        # output_path = ...
+        # engine = InferenceEngine(...)
+        # engine.run(...)
+        
+        time.sleep(5) # Mock processing
+        
+        logger.info(f"Inference Job {job_id} Completed")
+        return {"status": "success", "output_path": f"/data/outputs/{job_id}.sgy"}
+        
+    except Exception as e:
+        logger.error(f"Inference Job {job_id} Failed: {e}")
         raise e

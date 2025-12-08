@@ -1,22 +1,35 @@
 import logging
 import sys
+from typing import Any
+from promethium.core.config import get_settings
 
-def setup_logger(name: str = "promethium", level: int = logging.INFO) -> logging.Logger:
-    """
-    Configures and returns a logger with the specified name and level.
-    """
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
+settings = get_settings()
 
-    if not logger.handlers:
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setLevel(level)
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
+class CoreLogger:
+    def __init__(self, name: str):
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
+        
+        if not self.logger.handlers:
+            handler = logging.StreamHandler(sys.stdout)
+            formatter = logging.Formatter(
+                fmt="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S"
+            )
+            handler.setFormatter(formatter)
+            self.logger.addHandler(handler)
+
+    def info(self, msg: str, *args: Any, **kwargs: Any) -> None:
+        self.logger.info(msg, *args, **kwargs)
+
+    def error(self, msg: str, *args: Any, **kwargs: Any) -> None:
+        self.logger.error(msg, *args, **kwargs)
     
-    return logger
+    def warning(self, msg: str, *args: Any, **kwargs: Any) -> None:
+        self.logger.warning(msg, *args, **kwargs)
 
-logger = setup_logger()
+    def debug(self, msg: str, *args: Any, **kwargs: Any) -> None:
+        self.logger.debug(msg, *args, **kwargs)
+
+def get_logger(name: str) -> CoreLogger:
+    return CoreLogger(name)

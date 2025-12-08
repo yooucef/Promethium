@@ -1,0 +1,62 @@
+<div class="page-header">
+    <h1>Create New Job</h1>
+    <p>Configure your seismic reconstruction pipeline.</p>
+</div>
+
+<div class="config-container pm-card">
+    <div class="form-group">
+        <label>Job Name</label>
+        <input type="text" class="pm-input" placeholder="e.g. Denoise Survey A">
+    </div>
+
+    <div class="form-group">
+        <label>Select Dataset</label>
+        <select class="pm-input">
+            <option>Gulf_of_Mexico_Block_A.sgy</option>
+            <option>North_Sea_Survey_04.zarr</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Model Family</label>
+        <div class="model-cards">
+            <div class="model-card selected">
+                <div class="model-icon">🧬</div>
+                <h3>U-Net</h3>
+                <p>Standard Reconstruction</p>
+            </div>
+            <div class="model-card">
+                <div class="model-icon">🌌</div>
+                <h3>Autoencoder</h3>
+                <p>Noise Suppression</p>
+            </div>
+            <div class="model-card">
+                <div class="model-icon">📐</div>
+                <h3>PINN</h3>
+                <p>Physics-Informed</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Hyperparameters</label>
+        <div class="param-grid">
+            <div class="param-item">
+                <label>Learning Rate</label>
+                <input type="number" class="pm-input" value="0.001">
+            </div>
+            <div class="param-item">
+                <label>Batch Size</label>
+                <input type="number" class="pm-input" value="32">
+            </div>
+            <div class="param-item">
+                <label>Epochs</label>
+                <input type="number" class="pm-input" value="100">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button class="pm-btn pm-btn-primary">Launch Job 🚀</button>
+    </div>
+</div>

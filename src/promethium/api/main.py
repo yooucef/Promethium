@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from promethium.core.config import get_settings
 from promethium.core.logging import logger
 from promethium.core.database import engine, Base
-from promethium.api.routers import datasets, jobs
+from promethium.api.routers import datasets, jobs, ml
 
 settings = get_settings()
 
@@ -41,6 +41,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(datasets.router, prefix=settings.API_PREFIX)
 app.include_router(jobs.router, prefix=settings.API_PREFIX)
+app.include_router(ml.router, prefix=settings.API_PREFIX)
 
 @app.get("/health")
 async def health_check():
