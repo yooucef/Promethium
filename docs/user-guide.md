@@ -1,53 +1,41 @@
 # User Guide
 
-This guide describes how to use Promethium for storing, visualizing, and reconstructing seismic data.
+This guide provides step-by-step instructions for interacting with the Promethium system.
 
-## 1. Accessing the Dashboard
+## 1. Installation
 
-Navigate to `http://localhost:3000`. You will be greeted by the **Landing Page**, which displays system status and quick stats (Total Datasets, Active Jobs).
+Please refer to the [Deployment Guide](deployment-guide.md) for detailed installation instructions. Ensure you have the Docker stack running.
 
-## 2. Managing Datasets
+## 2. Accessing the Interface
+
+Open your web browser and navigate to `http://localhost:4200`. You will see the main Dashboard.
+
+## 3. Managing Datasets
 
 ### Registering a Dataset
-1.  Go to the **Datasets** view.
-2.  Click **"Upload New"**.
-3.  Select a standard **SEG-Y** file (`.sgy` or `.segy`).
-4.  (Optional) Provide a meaningful name (e.g., `Gulf_of_Mexico_Block_A`).
-5.  Click **Upload**. The file will be uploaded in parallel chunks for maximum speed.
+1.  Navigate to the **Datasets** view.
+2.  Click **"Upload / Register"**.
+3.  Provide a name and the path to your SEG-Y file (must be accessible to the worker container).
+4.  The system will index the file and generate metadata.
 
 ### Inspecting Data
-Once registered, click on a dataset card to open the **Seismic Viewer**.
-*   **Trace View**: View individual traces.
-*   **Gather View**: View 2D slices (Time vs Offset/Inline).
-*   **Spectral View**: Analyze frequency content (Amplitude Spectrum).
+Click on a dataset to view its header information, geometry (traces, samples, sampling rate), and a preview of the data.
 
-## 3. Running Reconstruction Jobs
+## 4. Running a Job
 
-### Configuring a Job
-1.  Navigate to **Jobs > New Job**.
-2.  **Select Dataset**: Choose the input volume.
-3.  **Select Model**:
-    *   `UNet-Denoise`: For removing random noise.
-    *   `PINN-Reconstruct`: For filling large gaps (trace interpolation) with physical constraints.
-    *   `SuperRes-GAN`: For enhancing frequency (bandwidth extension).
-4.  **Set Parameters**:
-    *   `Patch Size`: Default `128`.
-    *   `Overlap`: Default `0.25` (25%).
-    *   `Device`: Select specific GPU ID if available.
-5.  **Launch**: Click **Start Job**.
+### Configuration
+1.  Navigate to **Jobs** > **New Job**.
+2.  **Select Dataset**: Choose the source dataset.
+3.  **Select Model**: Choose a model family (e.g., U-Net Denoising).
+4.  **Hyperparameters**: Adjust parameters such as epochs, learning rate, or patch size.
+5.  **Launch**: Click "Start Job".
 
-### Monitoring Progress
-Go to the **Jobs** list.
-*   **Status**: `QUEUED` -> `RUNNING` -> `COMPLETED`.
-*   **Logs**: Click to see real-time inference logs.
-*   **metrics**: Post-job, view SNR improvement and SSIM scores.
+### Monitoring
+Go to the **Dashboard** or **Job Details** page to see the progress bar, real-time logs, and loss curves.
 
-## 4. Comparing Results
+## 5. Visualizing Results
 
-1.  Open a completed Job.
-2.  Click **"Compare"**.
-3.  You will see a Split-Screen view:
-    *   **Left**: Original Input.
-    *   **Right**: Reconstructed Output.
-    *   **Slider**: Drag to sweep between before/after.
-4.  **Difference Map**: toggle to see the residual (what was added/removed).
+Once a job is complete, navigate to the **Visualization** tab.
+*   **Split View**: Compare Input vs. Output.
+*   **Difference Plot**: View the residuals (removed noise or added signal).
+*   **Spectra**: Compare frequnecy contents.

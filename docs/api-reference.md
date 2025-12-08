@@ -1,78 +1,67 @@
 # API Reference
 
-**Base URL**: `/api/v1`
+The Promethium API is a RESTful interface built with FastAPI. It provides access to datasets, jobs, and system metadata.
+
+> **Note**: Interactive OpenAPI documentation is available at `/docs` when the service is running.
 
 ## Datasets
 
-### Upload Dataset
-`POST /datasets/`
+### List Datasets
+`GET /api/v1/datasets`
 
-Registers a new dataset in the system.
+Returns a list of registered datasets.
 
-**Request (Multipart/Form-Data)**
-- `name` (string): Friendly name.
-- `format` (string): `SEGY`, `SAC`, etc.
-- `file` (file): The binary file.
-
-**Response (201 Created)**
+**Response**:
 ```json
-{
-  "id": 1,
-  "name": "Survey A",
-  "format": "SEGY",
-  "file_path": "/data/uuid_filename.sgy",
-  "upload_time": "2025-01-01T12:00:00Z"
-}
+[
+  {
+    "id": "uuid",
+    "name": "Gulf of Mexico Block A",
+    "path": "/data/gom_block_a.sgy",
+    "size_bytes": 1024000
+  }
+]
 ```
 
-### List Datasets
-`GET /datasets/`
+### Register Dataset
+`POST /api/v1/datasets`
 
-Returns a paginated list of datasets.
-
-**Query Parameters**
-- `skip` (int): Offset (default 0).
-- `limit` (int): Count (default 100).
+**Body**:
+```json
+{
+  "name": "North Sea Survey",
+  "path": "/data/imports/ns_04.sgy"
+}
+```
 
 ## Jobs
 
 ### Submit Job
-`POST /jobs/`
+`POST /api/v1/ml/train`
 
-Queues a new processing task.
-
-**Request (JSON)**
+**Body**:
 ```json
 {
-  "dataset_id": 1,
-  "algorithm": "unet",
-  "params": {
-    "epochs": 10,
-    "lr": 0.001
+  "dataset_id": "uuid",
+  "model_config": {
+    "family": "unet",
+    "n_channels": 1
+  },
+  "training_config": {
+    "epochs": 50,
+    "batch_size": 32
   }
 }
 ```
 
-**Response (201 Created)**
+### Get Job Status
+`GET /api/v1/ml/jobs/{job_id}`
+
+**Response**:
 ```json
 {
-  "id": "uuid-string",
-  "status": "QUEUED",
-  "created_at": "..."
-}
-```
-
-### Job Status
-`GET /jobs/{id}`
-
-Returns the current status and result path.
-
-**Response**
-```json
-{
-  "id": "uuid-string",
-  "status": "COMPLETED",
-  "result_path": "/data/results/output.sgy",
-  "error_message": null
+  "job_id": "uuid",
+  "status": "RUNNING",
+  "result": null
 }
 ```

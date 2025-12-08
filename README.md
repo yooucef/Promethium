@@ -1,4 +1,4 @@
-# Promethium - SoTA Seismic Reconstruction Framework 🧬
+# Promethium - Advanced Seismic Data Recovery and Reconstruction Framework
 
 [![CI](https://github.com/olaflaitinen/Promethium/actions/workflows/ci.yml/badge.svg)](https://github.com/olaflaitinen/Promethium/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -8,63 +8,88 @@
 [![Code Style: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 
-![Promethium Logo](docs/img/logo.png)
+Promethium is an advanced framework for seismic data recovery, reconstruction, and enhancement. It integrates state-of-the-art artificial intelligence and machine learning techniques with classical geophysical signal processing to solve complex inverse problems in exploration geophysics, seismology, and hazard analysis.
 
-> **Advanced Seismic Data Recovery, Denoising, and Inpainting using State-of-the-Art AI/ML.**
+The system is designed for high-performance scale, supporting high-throughput ingestion of seismic data segments, processing via distributed GPU workers, and interactive visualization through a modern web interface.
 
-Promethium is a production-grade framework designed for geophysicists and ML researchers. It provides a unified pipeline for ingesting seismic data (SEG-Y), preprocessing it for deep learning, and applying advanced reconstruction models (U-Net, Autoencoders, PINNs).
+## Branding and Visual Identity
 
-## 🚀 Key Features
+The Promethium visual identity is anchored by a dark navy logo representing a continuous, organic waveform, symbolizing the recovery of signal fidelity from noise.
 
-*   **SoTA Model Zoo**: Pre-implemented U-Net, ResUNet, Denoising Autoencoders, and PINN architectures.
-*   **High-Performance I/O**: Direct SEG-Y support with optimized Zarr conversion for cloud-native random access.
-*   **Physics-Informed**: Loss functions integrating the Wave Equation to ensure physical consistency.
-*   **Interactive Frontend**: Modern Angular-based dashboard ("Void/Neon" data theme) for job management and visualization.
-*   **Scalable Backend**: FastAPI + Celery + Redis architecture for distributed training and inference.
-*   **Production Ops**: Docker Compose stack with Prometheus/Grafana monitoring and CI/CD workflows.
+*   **Logo**: `assets/branding/promethium-logo.png`
+*   **Primary Color**: Deep Navy `#050B24`
+*   **Accent Color**: Electric Cyan `#00F0FF`
 
-## 🛠️ Tech Stack
+## Key Features
 
-*   **Core**: Python 3.10, PyTorch 2.0, PyTorch Lightning.
-*   **Data**: xarray, numpy, zarr, segyio.
-*   **Backend**: FastAPI, SQLAlchemy, Celery, Redis.
-*   **Frontend**: Angular 17+, TypeScript, SCSS.
-*   **Infrastructure**: Docker, Nvidia Runtime, Github Actions.
+*   **Multi-Format Ingestion**: Native support for **SEG-Y**, **SEG-2**, **miniSEED**, and **SAC** formats.
+*   **Signal Conditioning**: Robust pipelines for denoising, deconvolution, and wavelet estimation.
+*   **AI/ML Reconstruction**: Implementation of **U-Net**, **Autoencoders**, **GANs**, and **PINNs** for data interpolation and inpainting.
+*   **Physics-Informed Constraints**: Integration of Wave Equation losses to ensure physical viability of reconstructed wavefields.
+*   **Scalable Architecture**: Asynchronous task orchestration using **Celery**, **Redis**, and **PostgreSQL**.
+*   **Modern Frontend**: an **Angular**-based interface for job management, configuration, and real-time visualization.
+*   **Containerized Deployment**: Fully Dockerized stack for consistent deployment across local and cloud environments.
 
-## 🏁 Quick Start
+## Architecture Snapshot
 
-### Prerequisites
-*   Docker & Docker Compose
-*   NVIDIA Drivers (for GPU support)
+Promethium follows a modular microservices-inspired architecture:
 
-### 1. clone & Env
+1.  **Core Library**: Domain models and utilities (`src/promethium/core`).
+2.  **ML Subsystem**: PyTorch-based models and training loops (`src/promethium/ml`).
+3.  **Backend API**: FastAPI gateway exposing REST endpoints (`src/promethium/api`).
+4.  **Workflow Engine**: Distributed workers for long-running computational tasks (`src/promethium/workflows`).
+5.  **Frontend**: Interactive Angular user interface (`frontend/`).
+
+For a detailed breakdown, please refer to [Architecture Overview](docs/architecture.md).
+
+## Quick Start
+
+The following instructions assume a Linux-based environment with Docker and Docker Compose installed.
+
+### 1. clone the Repository
+
 ```bash
 git clone https://github.com/olaflaitinen/Promethium.git
 cd Promethium
+```
+
+### 2. Configure Environment
+
+Copy the example configuration to a production environment file.
+
+```bash
 cp .env.example .env
 ```
 
-### 2. Launch Stack
+### 3. Launch the Stack
+
+Start all services in detached mode.
+
 ```bash
 docker-compose up --build -d
 ```
-Access the dashboard at `http://localhost:4200` and the API docs at `http://localhost:8000/docs`.
 
-### 3. Run a Job
-1.  Upload a `.sgy` file via the Dashboard.
-2.  Navigate to "Jobs" > "New Job".
-3.  Select "U-Net (Denoise)" and your dataset.
-4.  Launch! Monitor progress in real-time.
+Access the application at `http://localhost:4200` and the API documentation at `http://localhost:8000/docs`.
 
-## 📚 Documentation
+## Use Cases
 
-*   [**Architecture Overview**](docs/architecture.md): System design and component interaction.
-*   [**ML Pipelines**](docs/ml-pipelines.md): Detailed model architectures and training engines.
-*   [**User Guide**](docs/user-guide.md): Step-by-step generic workflows.
-*   [**Developer Guide**](docs/developer-guide.md): Setup, testing, and contribution.
-*   [**Benchmarking**](docs/benchmarking.md): Methodology for evaluating model accuracy.
-*   [**Deployment**](docs/deployment-guide.md): Production setup via Kubernetes/Docker.
+*   **Exploration Geophysics**: Recovering missing traces in sparse acquisition surveys to improve subsurface imaging.
+*   **Continuous Monitoring**: Real-time denoising of microseismic streams for accurate event detection.
+*   **Academic Benchmarking**: Providing a standardized platform for comparing novel reconstruction algorithms against established baselines.
 
-## ⚖️ License
+## Documentation
 
-Proprietary / Enterprise License (See `LICENSE` file).
+*   [Overview](docs/overview.md)
+*   [User Guide](docs/user-guide.md)
+*   [Developer Guide](docs/developer-guide.md)
+*   [ML Pipelines](docs/ml-pipelines.md)
+*   [Benchmarking](docs/benchmarking.md)
+*   [Deployment Guide](docs/deployment-guide.md)
+
+## Contributing
+
+We welcome contributions from the community. Please review our [Contribution Guidelines](CONTRIBUTING.md) and [Governance Model](GOVERNANCE.md) before submitting Pull Requests.
+
+## License
+
+This project is currently proprietary. Please see the [LICENSE](LICENSE) file for details.

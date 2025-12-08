@@ -1,41 +1,46 @@
 # Configuration
 
-Promethium uses **Pydantic Settings** to manage configuration via environment variables.
+Promethium uses a hierarchical configuration system based on Pydantic `BaseSettings`.
 
-## Global Settings
+## Environment Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `APP_NAME` | `Promethium` | Name of the application instance. |
-| `DEBUG` | `False` | Enable debug mode/logging. |
-| `DATABASE_URL` | *Required* | SQLAlchemy connection string (e.g., `postgresql+asyncpg://...`). |
-| `REDIS_URL` | *Required* | Redis connection string for caching. |
-| `CELERY_BROKER_URL`| *Required* | Redis/RabbitMQ URL for task queue. |
-| `DATA_STORAGE_PATH`| `/var/lib/promethium/data` | Path to persistent storage for SEG-Y files. |
+The primary configuration method is the `.env` file (or environment variables in K8s).
 
-## Pipeline Configuration
+| Variable | Description | Default |
+|String | ----------- | ------- |
+| `APP_NAME` | Name of the application | Promethium |
+| `DATABASE_URL` | PostgreSQL Connection String | `postgresql+asyncpg://...` |
+| `REDIS_URL` | Redis Connection String | `redis://...` |
+| `CELERY_BROKER_URL` | Broker for Celery | `redis://...` |
+| `DATA_STORAGE_PATH` | Base path for storage | `/data` |
+| `LOG_LEVEL` | Logging verbosity | `INFO` |
 
-Job parameters (`params`) are passed as JSON blobs to the API.
+## Model Configuration
 
-### U-Net Parameters
+Models are configured via JSON/Dictionary objects passed to the training API.
 
 ```json
 {
-  "patch_size": [64, 64],
-  "stride": [32, 32],
-  "epochs": 50,
-  "learning_rate": 1e-3,
-  "batch_size": 16,
-  "missing_trace_prob": 0.3
+  "family": "unet",
+  "n_channels": 1,
+  "parameters": {
+    "depth": 4,
+    "base_filters": 32,
+    "use_attention": true
+  }
 }
 ```
 
-### Deconvolution Parameters
+## Training Configuration
+
+Hyperparameters for the training loop.
 
 ```json
 {
-  "operator_length": 40,
-  "prediction_distance": 4,
-  "white_noise": 0.1
+  "batch_size": 32,
+  "lr": 0.001,
+  "epochs": 100,
+  "loss": "mse", // Options: mse, l1, pinn
+  "optimizer": "adamw"
 }
 ```

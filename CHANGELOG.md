@@ -2,19 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - 2025-12-07
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
 
 ### Added
-- **Angular Frontend**: Complete rewrite of the user interface using Angular v17+.
-- **Docker Architecture**: Centralized container configuration in `docker/`.
-- **Documentation**: Comprehensive guide suite in `docs/` covering Architecture, Deployment, and User workflows.
-- **Deep Learning**: Integrated `PromethiumLightningModule` for distributed training.
+*   Implementation of Physics-Informed Neural Networks (PINNs) for wave equation constrained reconstruction.
+*   New `BenchmarkEngine` for standardized calculation of SSIM, PSNR, and SNR metrics.
+*   Visualization component in Angular for interactive seismic trace viewing.
+*   Comprehensive documentation suite including `benchmarking.md` and `ml-pipelines.md`.
 
 ### Changed
-- **Refactor**: Repository structure optimized for modularity (`src/promethium/core`, `io`, `signal`, `ml`).
-- **Build System**: Removed Vite; standardized on Angular CLI for frontend builds.
-- **License**: Adopted CC BY-NC 4.0.
+*   Restructured repository layout to `src/promethium` for better packaging.
+*   Updated Angular frontend to version 17+ with the "Void/Neon" design system.
+*   Refactored `SeismicDataset` to use `xarray` and `zarr` for improved I/O performance.
 
 ### Fixed
-- **Docker Sync**: Improved container startup order and health checks.
-- **Documentation**: Standardized tone and removed non-professional elements.
+*   Resolved memory leaks in large-scale batch inference.
+*   Fixed parsing issues with non-standard SEG-Y headers.
+
+## [1.0.0] - 2024-01-01
+
+### Added
+*   Initial release of the Promethium framework.
+*   Basic U-Net implementation for denoising.
+*   FastAPI backend with basic job orchestration.

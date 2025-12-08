@@ -1,21 +1,79 @@
 # Contributing to Promethium
 
-Thank you for your interest in contributing to Promethium. We adhere to high standards of code quality and professional conduct.
+Thank you for your interest in contributing to Promethium. This document outlines the process for contributing to the project, ensuring that your contributions can be integrated efficiently and effectively.
 
-## Code of Conduct
-Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+## Contribution Philosophy
 
-## Development Workflow
+Promethium aims to be a definitive framework for seismic data reconstruction. We value:
 
-1.  **Fork and Clone**: Fork the repository and clone it locally.
-2.  **Branching**: Create a feature branch (`git checkout -b feat/my-feature`).
-3.  **Environment**: Set up your environment as described in the [Developer Guide](docs/developer-guide.md).
-4.  **Coding Standards**:
-    *   **Python**: PEP 8 compliance. Type hints are mandatory.
-    *   **Angular**: Strict mode enabled. Follow Angular Style Guide.
-    *   **Commits**: Conventional Commits (e.g., `fix: resolve seg-y header parsing error`).
-5.  **Testing**: Ensure all unit tests pass (`pytest` and `ng test`). Add new tests for any new functionality.
-6.  **Pull Request**: Submit a PR to the `main` branch. Provide a detailed description of changes.
+1.  **Technical Excellence**: Code should be performant, robust, and mathematically correct.
+2.  **Clarity**: Documentation and code comments must be precise and unambiguous.
+3.  **Reproducibility**: All algorithmic results must be reproducible via provided configurations and seeds.
 
-## Documentation
-Update documentation for any API changes or new features. We use Markdown. Do not use emojis in documentation or commit messages.
+## Development Environment Setup
+
+### Backend (Python)
+
+The backend requires **Python 3.10+**. We recommend using `Conda` or `venv` for environment management.
+
+```bash
+# Create environment
+conda create -n promethium python=3.10
+conda activate promethium
+
+# Install dependencies
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+```
+
+### Frontend (Angular)
+
+The frontend requires **Node.js 20+**.
+
+```bash
+cd frontend
+npm ci
+```
+
+### Docker
+
+Ensure **Docker Engine** and **Docker Compose** are installed to run the full integration stack locally.
+
+## Coding Standards
+
+### Python
+
+*   **Style**: We adhere to **PEP 8**.
+*   **Linting**: use `ruff` for linting and import sorting.
+*   **Formatting**: Use `black` for code formatting.
+*   **Typing**: All function signatures must be fully type-hinted.
+
+### Angular / TypeScript
+
+*   Follow the official [Angular Style Guide](https://angular.io/guide/styleguide).
+*   Use `ESLint` and `Prettier` configurations provided in the repository.
+
+### Commit Messages
+
+Use the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+
+*   `feat: ...` for new features.
+*   `fix: ...` for bug fixes.
+*   `docs: ...` for documentation changes.
+*   `refactor: ...` for code restructuring without behavioral change.
+
+## Pull Request Guidelines
+
+1.  **Branch Naming**: Use descriptive names, e.g., `feat/unet-attention-blocks` or `fix/segy-header-parsing`.
+2.  **Scope**: Keep PRs focused on a single logical change.
+3.  **Testing**: Include unit tests for new logic. Ensure all existing tests pass.
+4.  **Documentation**: Update relevant documentation in `docs/` if functionality changes.
+
+## Issue Reporting
+
+When filing an issue, please include:
+
+1.  A clear, descriptive title.
+2.  Steps to reproduce the issue (minimal example).
+3.  Expected vs. actual behavior.
+4.  Environment details (OS, Python version, Docker version).

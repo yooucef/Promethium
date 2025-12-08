@@ -1,39 +1,20 @@
-# Promethium Overview
-
-Promethium is a research-grade framework designed to bridge the gap between classical geophysical processing and modern deep learning for seismic data reconstruction.
+# Project Overview
 
 ## Problem Statement
+Seismic data acquisition is often plagued by noise, missing traces, and irregular sampling due to environmental constraints, equipment limitations, or economic factors. High-quality seismic imaging relies on complete and clean wavefields. Traditional interpolation and denoising methods often struggle with complex geological structures or heavily aliased data.
 
-Seismic data acquisition is often constrained by logistical, financial, and environmental factors, leading to:
-*   **Irregular Sampling**: Gaps in spatial coverage.
-*   **Missing Traces**: Dead channels or rejected shots.
-*   **Aliasing**: Insufficient sampling of high-frequency signal components.
+## Promethium Mission
+Promethium aims to bridge the gap between classical signal processing and modern Deep Learning. By leveraging state-of-the-art architectures like U-Nets and Physics-Informed Neural Networks (PINNs), Promethium reconstructs high-fidelity seismic data from sparse or noisy inputs, constrained by the governing physics of wave propagation.
 
-These deficiencies compromise downstream processing tasks such as migration, inversion, and attribute analysis.
+## Design Principles
+1.  **Accuracy**: Prioritize signal fidelity and structural preservation (SSIM) over perceptual smoothness.
+2.  **Robustness**: Models must generalize across different surveys and acquisition geometries.
+3.  **Scalability**: The system must handle terabyte-scale datasets via distributed processing.
+4.  **Explainability**: Provide uncertainty estimates and physics-based validation metrics.
 
-## Solution
-
-Promethium provides a unified environment to apply and compare:
-1.  **classical interpolation methods** (MWNI, POCS).
-2.  **optimization-based recovery** (Matrix Completion, Compressive Sensing).
-3.  **data-driven deep learning** (U-Nets, GANs).
-4.  **physics-informed deep learning** (PINNs).
-
-## Technology Stack
-
-### Frontend
-*   **Angular v17+**: Provides a robust, type-safe environment for building complex dashboards.
-*   **Plotly.js**: High-performance rendering of seismic traces and heatmaps.
-*   **RxJS**: Handles real-time data streams and state management.
-
-### Backend
-*   **Python 3.10+**: The lingua franca of scientific computing and AI.
-*   **FastAPI**: High-performance, async-first web framework.
-*   **PyTorch**: The backend for all deep learning modules.
-*   **Celery/Redis**: Distributed task queue for managing long-running reconstruction jobs.
-
-## Design Philosophy
-
-*   **Modularity**: Algorithms are decoupled from I/O and visualization.
-*   **Reproducibility**: All experiments are configuration-driven and versioned.
-*   **Scalability**: Docker-first design ensures deployment consistency from laptop to cluster.
+## Typical Workflows
+1.  **Ingest**: Load SEG-Y data into a high-performance Zarr store.
+2.  **Preprocess**: Apply gain, filtering, and normalization.
+3.  **Train/Fine-tune**: Train a reconstruction model on a subset of the data or use a pretrained model.
+4.  **reconstruct**: Run inference on the full volume to recover missing data.
+5.  **Visualize**: Inspect the original, masking, and reconstruction side-by-side in the web dashboard.

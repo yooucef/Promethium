@@ -2,18 +2,30 @@
 
 ## Supported Versions
 
+Only the most recent major version of Promethium is currently supported with security updates.
+
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| 2.x     | :white_check_mark: |
+| 1.x     | :x:                |
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability within Promethium, please do not disclose it publicly.
+We take the security of Promethium seriously. If you discover a security vulnerability, please do not disclose it publicly until we have had a chance to address it.
 
-1.  Email the maintainers directly.
-2.  Provide a detailed description of the vulnerability and steps to reproduce.
-3.  We will acknowledge receipt of your report within 48 hours.
-4.  We will provide a timeline for the fix and release.
+### Workflow
 
-We appreciate your efforts to keep Promethium secure.
+1.  **Private Disclosure**: Please email the core maintenance team (see `SUPPORT.md` for contact details) with a description of the vulnerability.
+2.  **Triage**: We will acknowledge receipt of your report within 48 hours and provide an estimated timeline for analysis.
+3.  **Resolution**: Once verified, we will develop a patch and release a security advisory.
+
+### Scope
+
+The following areas are considered in scope for security reports:
+
+*   **API Security**: Unauthorized access to endpoints, injection vulnerabilities.
+*   **Data Integrity**: Potential for data corruption or unauthorized modification.
+*   **Authentication/Authorization**: Bypassing role-based access controls.
+*   **Secrets Management**: Leaking of credentials or keys via logs or error messages.
+
+Thank you for helping keep Promethium secure.
