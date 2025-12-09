@@ -392,7 +392,7 @@ Install development dependencies:
 pip install promethium-seismic[dev]==1.0.0
 ```
 
-## 📚 Documentation
+## Documentation
 
 For detailed information on the mathematical models, algorithms, and methodologies used in Promethium, please refer to the [**Math & Methodology Guide**](docs/methodology.md).
 
