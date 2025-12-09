@@ -8,12 +8,13 @@ This document details the mathematical foundations and model architectures used 
 The Signal-to-Noise Ratio measures the ratio of signal power to noise power, expressed in decibels (dB).
 
 $$
-\text{SNR}_{dB} = 10 \log_{10} \left( \frac{P_{signal}}{P_{noise}} \right)
+\text{SNR}_{\text{dB}} = 10 \log_{10} \left( \frac{P_{\text{signal}}}{P_{\text{noise}}} \right)
 $$
 
 Where power $P$ is calculated as the mean squared amplitude:
+
 $$
-P_{signal} = \frac{1}{N} \sum_{i=1}^{N} y_i^2, \quad P_{noise} = \frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2
+P_{\text{signal}} = \frac{1}{N} \sum_{i=1}^{N} y_i^2, \quad P_{\text{noise}} = \frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2
 $$
 
 ### Structural Similarity Index (SSIM)
@@ -60,8 +61,9 @@ Where:
 We employ the Iterative Shrinkage-Thresholding Algorithm (ISTA) to recover missing seismic data by exploiting sparsity in a transform domain (e.g., DCT or Curvelet).
 
 **Optimization Objective:**
+
 $$
-\min_x \frac{1}{2} ||y - \Phi x||_2^2 + \lambda ||\Psi x||_1
+\min_x \frac{1}{2} \|y - \Phi x\|_2^2 + \lambda \|\Psi x\|_1
 $$
 
 Where:
@@ -71,10 +73,13 @@ Where:
 *   $\lambda$: Regularization parameter.
 
 **Update Rule:**
+
 $$
 x_{k+1} = \mathcal{S}_{\lambda \alpha} \left( x_k + \alpha \Phi^T (y - \Phi x_k) \right)
 $$
+
 Where $\mathcal{S}$ is the soft-thresholding operator:
+
 $$
 \mathcal{S}_{\tau}(u) = \text{sign}(u) \max(|u| - \tau, 0)
 $$
@@ -102,7 +107,7 @@ The U-Net is a fully convolutional network with an encoder-decoder structure and
 We typically use Mean Squared Error (MSE) or L1 Loss for signal reconstruction:
 
 $$
-\mathcal{L}_{MSE} = \frac{1}{N} \sum ||y_{true} - y_{pred}||^2
+\mathcal{L}_{\text{MSE}} = \frac{1}{N} \sum \|y_{\text{true}} - y_{\text{pred}}\|^2
 $$
 
 For perceptual quality, we may combine this with an Adversarial Loss (GAN) or Perceptual Loss (VGG-based).
@@ -111,11 +116,13 @@ For perceptual quality, we may combine this with an Adversarial Loss (GAN) or Pe
 To ensure frequency content is preserved during reconstruction, we employ a spectral loss term:
 
 $$
-\mathcal{L}_{total} = \mathcal{L}_{MSE} + \alpha \mathcal{L}_{spectral}
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{MSE}} + \alpha \mathcal{L}_{\text{spectral}}
 $$
 
 Where:
+
 $$
-\mathcal{L}_{spectral} = || |\mathcal{F}(y)| - |\mathcal{F}(\hat{y})| ||^2
+\mathcal{L}_{\text{spectral}} = \left\| |\mathcal{F}(y)| - |\mathcal{F}(\hat{y})| \right\|^2
 $$
+
 $\mathcal{F}$ denotes the Fourier Transform magnitude. This penalizes blurriness and ensures high-frequency geologic features are recovered.
