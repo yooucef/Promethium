@@ -392,6 +392,15 @@ Install development dependencies:
 pip install promethium-seismic[dev]==1.0.0
 ```
 
+## 📚 Documentation
+
+For detailed information on the mathematical models, algorithms, and methodologies used in Promethium, please refer to the [**Math & Methodology Guide**](docs/methodology.md).
+
+*   [**Installation Guide**](README.md#installation)
+*   [**Quick Start**](README.md#quick-start)
+*   [**Kaggle Integration**](docs/kaggle-integration.md)
+*   [**Notebooks**](docs/notebooks-overview.md)
+*   [**Full API Reference**](docs/api-reference.md)
 
 ### Kaggle Integration
 
