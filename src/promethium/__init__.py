@@ -7,7 +7,7 @@ reconstruction, denoising, and geophysical data enhancement.
 
 Distribution Name: promethium-seismic
 Import Namespace: promethium
-Version: 1.0.0
+Version: 1.0.2
 
 Installation:
     pip install promethium-seismic==1.0.2
