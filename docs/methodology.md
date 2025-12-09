@@ -115,5 +115,7 @@ $$
 $$
 
 Where:
-$$ \mathcal{L}_{spectral} = || |\mathcal{F}(y)| - |\mathcal{F}(\hat{y})| ||^2 $$
+$$ 
+\mathcal{L}_{spectral} = || |\mathcal{F}(y)| - |\mathcal{F}(\hat{y})| ||^2 
+$$
 $\mathcal{F}$ denotes the Fourier Transform magnitude. This penalizes blurriness and ensures high-frequency geologic features are recovered.
