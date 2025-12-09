@@ -359,10 +359,10 @@ promethium/
 Install Promethium directly from PyPI:
 
 ```bash
-pip install promethium-seismic==1.0.2
+pip install promethium-seismic==1.0.3
 ```
 
-**PyPI Package:** [https://pypi.org/project/promethium-seismic/1.0.2/](https://pypi.org/project/promethium-seismic/1.0.2/)
+**PyPI Package:** [https://pypi.org/project/promethium-seismic/1.0.3/](https://pypi.org/project/promethium-seismic/1.0.3/)
 
 This installs the core library with minimal dependencies, suitable for most use cases including Kaggle and Google Colab notebooks.
 
@@ -392,13 +392,37 @@ Install development dependencies:
 pip install promethium-seismic[dev]==1.0.0
 ```
 
-### Kaggle and Google Colab Usage
 
-Promethium is designed to work seamlessly in cloud notebook environments:
+### Kaggle Integration
+
+Promethium is designed to be **Kaggle-native**, supporting both standard PyPI installation and offline/pip-less usage via Kaggle Datasets.
+
+**Quick References:**
+*   [Kaggle Integration Guide](docs/kaggle-integration.md) (Full Documentation)
+*   [Pip-less Source Usage Example](notebooks/kaggle/01_pipless_source_dataset_usage.ipynb)
+*   [Offline Wheel Install Example](notebooks/kaggle/02_local_wheel_install.ipynb)
+
+#### Standard PyPI Usage (Network Required)
 
 ```python
-# Install in a notebook cell
-!pip install promethium-seismic==1.0.2
+!pip install promethium-seismic==1.0.3
+import promethium
+```
+
+#### Offline / Pip-less Usage (Competitions)
+
+You can attach the **Promethium Wheel Dataset** or **Source Dataset** to your notebook to use the library without internet access.
+
+```python
+# Mode A: Pip-less Source Import
+import sys
+sys.path.append("/kaggle/input/promethium-seismic-source-100")
+import promethium
+
+# Mode B: Offline Wheel Install
+!pip install ../input/promethium-seismic-wheel-100/promethium_seismic-1.0.3-py3-none-any.whl
+```
+
 
 import promethium
 from promethium import read_segy, SeismicRecoveryPipeline

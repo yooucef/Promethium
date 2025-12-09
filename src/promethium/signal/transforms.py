@@ -76,3 +76,67 @@ class RandomGain(SeismicTransform):
         # But if it's reconstruction, we might want to scale target too? 
         # Usually Gain is specific to Input Augmentation.
         return sample
+
+
+# -----------------------------------------------------------------------------
+# Signal Processing Functions
+# -----------------------------------------------------------------------------
+
+def fft(data: np.ndarray, axis: int = -1) -> np.ndarray:
+    """
+    Compute the Fast Fourier Transform of the input data.
+    
+    Args:
+        data: Input array (1D or 2D)
+        axis: Axis along which to compute FFT
+        
+    Returns:
+        Complex FFT result
+    """
+    return np.fft.fft(data, axis=axis)
+
+
+def ifft(data: np.ndarray, axis: int = -1) -> np.ndarray:
+    """
+    Compute the Inverse Fast Fourier Transform.
+    
+    Args:
+        data: Complex FFT data
+        axis: Axis along which to compute IFFT
+        
+    Returns:
+        Real-valued reconstructed signal
+    """
+    return np.fft.ifft(data, axis=axis).real
+
+
+def wavelet_transform(
+    data: np.ndarray, 
+    wavelet: str = 'morl',
+    scales: np.ndarray = None,
+    fs: float = 1.0
+) -> np.ndarray:
+    """
+    Compute the Continuous Wavelet Transform.
+    
+    Args:
+        data: Input 1D signal
+        wavelet: Wavelet type ('morl', 'mexh', 'cmor', etc.)
+        scales: Array of scales to use (default: automatic)
+        fs: Sampling frequency
+        
+    Returns:
+        2D array of wavelet coefficients (scales x time)
+    """
+    try:
+        import pywt
+        if scales is None:
+            scales = np.arange(1, min(128, len(data) // 2))
+        coeffs, freqs = pywt.cwt(data, scales, wavelet, sampling_period=1/fs)
+        return coeffs
+    except ImportError:
+        # Fallback to simple STFT-like approach if pywt not available
+        from scipy.signal import stft
+        _, _, Zxx = stft(data, fs=fs, nperseg=min(256, len(data)))
+        return np.abs(Zxx)
+

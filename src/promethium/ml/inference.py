@@ -139,3 +139,58 @@ def reconstruct(model: torch.nn.Module, data: np.ndarray, missing_traces: list =
         out = model(inp)
         
     return out.cpu().numpy()[0, 0]
+
+
+def load_model(path: str, device: str = None) -> 'PromethiumModule':
+    """
+    Load a pre-trained model from a checkpoint.
+    
+    Args:
+        path: Path to the .ckpt file or model directory.
+        device: Device to load model on (e.g., 'cuda', 'cpu').
+        
+    Returns:
+        Loaded PromethiumModule in eval mode.
+    """
+    from promethium.ml.train import PromethiumModule
+    
+    if device is None:
+        device = settings.DEFAULT_DEVICE
+    
+    if device == "auto":
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        
+    try:
+        # Assuming path is a checkpoint file
+        model = PromethiumModule.load_from_checkpoint(path, map_location=device)
+        model.to(device)
+        model.eval()
+        model.freeze()
+        return model
+    except Exception as e:
+        logger.error(f"Failed to load model from {path}: {e}")
+        raise
+
+
+def reconstruct(
+    data: np.ndarray, 
+    model: 'PromethiumModule', 
+    device: str = None,
+    patch_size: Tuple[int, int] = (128, 128),
+    overlap: float = 0.25
+) -> np.ndarray:
+    """
+    High-level convenience function for reconstruction.
+    
+    Args:
+        data: Input seismic data (2D array).
+        model: Loaded PromethiumModule.
+        device: Computation advice.
+        patch_size: Size of sliding window.
+        overlap: Overlap fraction.
+        
+    Returns:
+        Reconstructed numpy array.
+    """
+    engine = InferenceEngine(model, device=device, patch_size=patch_size, overlap=overlap)
+    return engine.run(data)

@@ -70,3 +70,13 @@ class PromethiumModule(pl.LightningModule):
         loss = self._compute_loss(batch, batch_idx)
         self.log("test_loss", loss)
         return loss
+
+
+class PromethiumTrainer(pl.Trainer):
+    """
+    Wrapper around PyTorch Lightning Trainer with Promethium defaults.
+    """
+    def __init__(self, **kwargs):
+        # Set default callbacks or configuration if needed
+        super().__init__(**kwargs)
+
