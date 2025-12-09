@@ -111,3 +111,31 @@ class InferenceEngine:
             h, w = pred[i].shape
             output[t:t+h, s:s+w] += pred[i] * window
             weights[t:t+h, s:s+w] += window
+
+# Notebook Helper Functions
+def load_model(name: str) -> torch.nn.Module:
+    """
+    Mock loader for notebook usage.
+    """
+    config = {"n_channels": 1, "n_classes": 1} 
+    model = ModelRegistry.create("unet", config)
+    model.eval()
+    return model
+
+def reconstruct(model: torch.nn.Module, data: np.ndarray, missing_traces: list = None) -> np.ndarray:
+    """
+    Simple reconstruction wrapper for notebook demo.
+    """
+    # Simply run inference using the engine logic (or simplified forward pass)
+    # For demo purposes, let's wrap logic around the model directly for single efficient pass
+    # or handle data shape adjustment
+    
+    device = next(model.parameters()).device
+    
+    # Ensure correct shape (1, 1, H, W)
+    inp = torch.from_numpy(data).float().unsqueeze(0).unsqueeze(0).to(device)
+    
+    with torch.no_grad():
+        out = model(inp)
+        
+    return out.cpu().numpy()[0, 0]

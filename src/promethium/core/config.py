@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     """
     APP_NAME: str = "Promethium"
     APP_VERSION: str = "1.0.0"
-    DEBUG: bool = False
+    DEBUG: bool | str = False
     
     # API
     API_HOST: str = "0.0.0.0"

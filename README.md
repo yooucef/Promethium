@@ -354,27 +354,92 @@ promethium/
 
 ## Installation and Setup
 
-### Prerequisites
+### PyPI Installation (Recommended)
 
-Ensure the following software is installed on your system:
+Install Promethium directly from PyPI:
+
+```bash
+pip install promethium-seismic==1.0.0
+```
+
+**PyPI Package:** [https://pypi.org/project/promethium-seismic/1.0.0/](https://pypi.org/project/promethium-seismic/1.0.0/)
+
+This installs the core library with minimal dependencies, suitable for most use cases including Kaggle and Google Colab notebooks.
+
+#### Optional Dependencies
+
+Install with visualization support:
+
+```bash
+pip install promethium-seismic[viz]==1.0.0
+```
+
+Install with server components (FastAPI, Celery, Redis) for backend deployment:
+
+```bash
+pip install promethium-seismic[server]==1.0.0
+```
+
+Install all optional dependencies:
+
+```bash
+pip install promethium-seismic[all]==1.0.0
+```
+
+Install development dependencies:
+
+```bash
+pip install promethium-seismic[dev]==1.0.0
+```
+
+### Kaggle and Google Colab Usage
+
+Promethium is designed to work seamlessly in cloud notebook environments:
+
+```python
+# Install in a notebook cell
+!pip install promethium-seismic==1.0.0
+
+import promethium
+from promethium import read_segy, SeismicRecoveryPipeline
+
+# Load seismic data (from Kaggle input or uploaded file)
+data = read_segy("/kaggle/input/seismic-dataset/survey.sgy")
+
+# Create and run reconstruction pipeline
+pipeline = SeismicRecoveryPipeline.from_preset("unet_denoise_v1")
+result = pipeline.run(data)
+
+# Evaluate reconstruction quality
+metrics = promethium.evaluate_reconstruction(data.values, result)
+print(metrics)
+```
+
+Key considerations for notebook environments:
+- GPU acceleration is automatically enabled when available
+- The core library works on CPU-only environments
+- Use `/kaggle/input/...` paths for Kaggle datasets
+- Use `/content/...` paths for Colab uploaded files
+
+### Prerequisites (for Development or Server Deployment)
+
+For full development or server deployment, ensure the following software is installed:
 
 - **Python**: Version 3.10 or higher
-- **Node.js**: Version 20 or higher
-- **npm**: Version 10 or higher (included with Node.js)
+- **Node.js**: Version 20 or higher (for frontend development)
 - **Docker**: Version 24 or higher (for containerized deployment)
 - **Docker Compose**: Version 2.20 or higher
-- **Git**: Version 2.40 or higher
 
-### Clone the Repository
+### Clone the Repository (for Development)
 
 ```bash
 git clone https://github.com/olaflaitinen/promethium.git
 cd promethium
 ```
 
-### Option 1: Docker Deployment (Recommended)
+### Option 1: Docker Deployment
 
-The recommended approach for running Promethium is using Docker Compose, which handles all service dependencies automatically.
+The recommended approach for running the full Promethium server stack:
 
 ```bash
 # Copy environment template and configure
@@ -386,9 +451,6 @@ docker compose -f docker/docker-compose.yml up --build -d
 
 # Verify services are running
 docker compose -f docker/docker-compose.yml ps
-
-# View logs
-docker compose -f docker/docker-compose.yml logs -f
 ```
 
 The following services will be available:
@@ -398,14 +460,10 @@ The following services will be available:
 | Frontend | http://localhost:4200 | Angular web application |
 | Backend API | http://localhost:8000 | FastAPI REST API |
 | API Documentation | http://localhost:8000/docs | Interactive OpenAPI documentation |
-| PostgreSQL | localhost:5432 | Database (internal) |
-| Redis | localhost:6379 | Message broker (internal) |
 
 ### Option 2: Local Development Setup
 
-For development without Docker, configure each component individually.
-
-#### Backend Setup
+For development without Docker:
 
 ```bash
 # Create and activate virtual environment
@@ -417,47 +475,15 @@ python -m venv .venv
 # Linux/macOS
 source .venv/bin/activate
 
-# Install dependencies
-pip install --upgrade pip
-pip install -e ".[dev]"
+# Install in editable mode with dev dependencies
+pip install -e ".[dev,server]"
 
-# Configure environment variables
-cp .env.example .env
-# Edit .env with database and Redis connection details
-
-# Initialize database
-python scripts/setup_db.py
-
-# Start Redis (requires local Redis installation)
-redis-server
-
-# Start PostgreSQL (requires local PostgreSQL installation)
-# Ensure database 'promethium' exists
-
-# Run database migrations
-alembic upgrade head
+# Run tests
+pytest tests/ -v
 
 # Start the backend API server
 uvicorn src.promethium.api.main:app --reload --host 0.0.0.0 --port 8000
-
-# In a separate terminal, start Celery workers
-celery -A src.promethium.workflows.tasks worker --loglevel=info
 ```
-
-#### Frontend Setup
-
-```bash
-# Navigate to frontend directory
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start development server
-npm start
-```
-
-The frontend will be available at http://localhost:4200.
 
 ---
 
@@ -575,6 +601,47 @@ curl -X GET "http://localhost:8000/api/v1/jobs/<job-id>/results" \
 6. **Export**: Download processed data with full header preservation.
 
 ---
+
+## Example Notebooks
+
+Promethium includes a comprehensive suite of 15 Jupyter notebooks for learning and experimentation. All notebooks are located in the `notebooks/` directory.
+
+### Quick Start
+
+```bash
+pip install promethium-seismic==1.0.0
+jupyter notebook notebooks/
+```
+
+### Notebook Catalog
+
+| Notebook | Description | Level |
+|----------|-------------|-------|
+| [01_quickstart_basic_usage](notebooks/01_quickstart_basic_usage.ipynb) | Minimal end-to-end example | Beginner |
+| [02_data_ingestion_and_quality_control](notebooks/02_data_ingestion_and_quality_control.ipynb) | Loading SEG-Y, miniSEED, SAC | Beginner |
+| [03_signal_processing_basics](notebooks/03_signal_processing_basics.ipynb) | Filters and transforms | Beginner |
+| [04_matrix_completion_and_compressive_sensing](notebooks/04_matrix_completion_and_compressive_sensing.ipynb) | Classical recovery | Intermediate |
+| [05_deep_learning_unet_reconstruction](notebooks/05_deep_learning_unet_reconstruction.ipynb) | U-Net inference | Intermediate |
+| [06_gan_based_high_fidelity_reconstruction](notebooks/06_gan_based_high_fidelity_reconstruction.ipynb) | GAN-based recovery | Advanced |
+| [07_evaluation_metrics_and_visualization](notebooks/07_evaluation_metrics_and_visualization.ipynb) | SNR, PSNR, SSIM analysis | Intermediate |
+| [08_kaggle_and_colab_integration](notebooks/08_kaggle_and_colab_integration.ipynb) | Cloud environment usage | Beginner |
+| [09_backend_api_and_job_system_demo](notebooks/09_backend_api_and_job_system_demo.ipynb) | REST API integration | Advanced |
+| [10_end_to_end_case_study_synthetic_data](notebooks/10_end_to_end_case_study_synthetic_data.ipynb) | Complete synthetic workflow | Intermediate |
+| [11_end_to_end_case_study_real_world_data](notebooks/11_end_to_end_case_study_real_world_data.ipynb) | Real data processing | Advanced |
+| [12_benchmarking_and_ablation_studies](notebooks/12_benchmarking_and_ablation_studies.ipynb) | Method comparison | Advanced |
+| [13_data_engineering_pipelines_and_batch_jobs](notebooks/13_data_engineering_pipelines_and_batch_jobs.ipynb) | Batch processing | Advanced |
+| [14_advanced_model_customization_and_training](notebooks/14_advanced_model_customization_and_training.ipynb) | Custom training | Advanced |
+| [15_troubleshooting_and_best_practices](notebooks/15_troubleshooting_and_best_practices.ipynb) | Common issues | All |
+
+### Recommended Learning Path
+
+1. Start with **01_quickstart_basic_usage** for a minimal working example
+2. Continue to **02_data_ingestion** to understand data loading
+3. Explore **03_signal_processing** for preprocessing techniques
+4. Move to **05_deep_learning_unet** for ML-based reconstruction
+5. Use **08_kaggle_and_colab** for cloud deployment
+
+See [docs/notebooks-overview.md](docs/notebooks-overview.md) for detailed documentation.
 
 ## AI/ML and Data Engineering Highlights
 
