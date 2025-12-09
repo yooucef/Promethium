@@ -8,7 +8,7 @@ This document details the mathematical foundations and model architectures used 
 The Signal-to-Noise Ratio measures the ratio of signal power to noise power, expressed in decibels (dB).
 
 $$
-\mathrm{SNR}_{dB} = 10 \log_{10} \left( \frac{P_{\mathrm{signal}}}{P_{\mathrm{noise}}} \right)
+\text{SNR}_{dB} = 10 \log_{10} \left( \frac{P_{signal}}{P_{noise}} \right)
 $$
 
 Where power $P$ is calculated as the mean squared amplitude:
@@ -20,7 +20,7 @@ $$
 SSIM measures the perceived quality of the reconstructed signal by comparing luminance, contrast, and structure.
 
 $$
-\mathrm{SSIM}(x, y) = \frac{(2\mu_x\mu_y + C_1)(2\sigma_{xy} + C_2)}{(\mu_x^2 + \mu_y^2 + C_1)(\sigma_x^2 + \sigma_y^2 + C_2)}
+\text{SSIM}(x, y) = \frac{(2\mu_x\mu_y + C_1)(2\sigma_{xy} + C_2)}{(\mu_x^2 + \mu_y^2 + C_1)(\sigma_x^2 + \sigma_y^2 + C_2)}
 $$
 
 Where:
@@ -61,7 +61,7 @@ We employ the Iterative Shrinkage-Thresholding Algorithm (ISTA) to recover missi
 
 **Optimization Objective:**
 $$
-\min_x \frac{1}{2} \|y - \Phi x\|_2^2 + \lambda \|\Psi x\|_1
+\min_x \frac{1}{2} ||y - \Phi x||_2^2 + \lambda ||\Psi x||_1
 $$
 
 Where:
@@ -76,7 +76,7 @@ x_{k+1} = \mathcal{S}_{\lambda \alpha} \left( x_k + \alpha \Phi^T (y - \Phi x_k)
 $$
 Where $\mathcal{S}$ is the soft-thresholding operator:
 $$
-\mathcal{S}_{\tau}(u) = \mathrm{sign}(u) \max(|u| - \tau, 0)
+\mathcal{S}_{\tau}(u) = \text{sign}(u) \max(|u| - \tau, 0)
 $$
 
 ---
@@ -102,7 +102,7 @@ The U-Net is a fully convolutional network with an encoder-decoder structure and
 We typically use Mean Squared Error (MSE) or L1 Loss for signal reconstruction:
 
 $$
-\mathcal{L}_{MSE} = \frac{1}{N} \sum \|y_{true} - y_{pred}\|^2
+\mathcal{L}_{MSE} = \frac{1}{N} \sum ||y_{true} - y_{pred}||^2
 $$
 
 For perceptual quality, we may combine this with an Adversarial Loss (GAN) or Perceptual Loss (VGG-based).
