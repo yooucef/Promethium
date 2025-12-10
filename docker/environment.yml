@@ -16,6 +16,8 @@ dependencies:
   
   # Geophysics
   - obspy>=1.4.0
+  - pywavelets>=1.4.0
+  - zarr>=2.12.0
   
   # PyTorch (CPU version for smaller image, use pytorch channel for GPU)
   - pytorch-cpu>=2.0

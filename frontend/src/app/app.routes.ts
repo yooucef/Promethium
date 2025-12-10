@@ -11,20 +11,21 @@ import { DocsComponent } from './pages/docs/docs.component';
 import { PipelinesComponent } from './pages/pipelines/pipelines.component';
 import { ExperimentsComponent } from './pages/experiments/experiments.component';
 import { BenchmarksComponent } from './pages/benchmarks/benchmarks.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-    { path: 'dashboard', component: DashboardComponent },
-    { path: 'datasets', component: DatasetsComponent },
-    { path: 'jobs', component: JobSubmissionComponent },
-    { path: 'pipelines', component: PipelinesComponent },
-    { path: 'models', component: ModelsComponent },
-    { path: 'experiments', component: ExperimentsComponent },
-    { path: 'benchmarks', component: BenchmarksComponent },
-    { path: 'results', component: ResultsComponent },
-    { path: 'system', component: SystemComponent },
-    { path: 'docs', component: DocsComponent },
-    { path: 'visualize', component: VisualizationComponent },
-    { path: 'settings', component: SettingsComponent },
+    { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+    { path: 'datasets', component: DatasetsComponent, canActivate: [authGuard] },
+    { path: 'jobs', component: JobSubmissionComponent, canActivate: [authGuard] },
+    { path: 'pipelines', component: PipelinesComponent, canActivate: [authGuard] },
+    { path: 'models', component: ModelsComponent, canActivate: [authGuard] },
+    { path: 'experiments', component: ExperimentsComponent, canActivate: [authGuard] },
+    { path: 'benchmarks', component: BenchmarksComponent, canActivate: [authGuard] },
+    { path: 'results', component: ResultsComponent, canActivate: [authGuard] },
+    { path: 'system', component: SystemComponent, canActivate: [authGuard] },
+    { path: 'docs', component: DocsComponent }, // Docs might be public
+    { path: 'visualize', component: VisualizationComponent, canActivate: [authGuard] },
+    { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
     { path: '**', redirectTo: '/dashboard' }
 ];
